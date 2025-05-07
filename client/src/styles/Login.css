@@ -1,0 +1,38 @@
+.login-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    min-height: 75vh;
+}
+
+.login-container {
+    border: 1px solid black;
+    width: 300px;
+    height: 400px;
+    border-radius: 10%;
+    padding: 1rem;
+    margin-top: 30px;
+}
+
+.title-text {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-text {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 50px;
+}
+
+textarea {
+    resize: none;
+}
+
+.register-login-text {
+    text-align: center;
+    margin-top: 60px;
+}

@@ -1,0 +1,28 @@
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-container {
+    background-color: #E6E6FA;
+    width: 100%;
+    margin-top: 50px;
+    padding: 10px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 15px;
+}
