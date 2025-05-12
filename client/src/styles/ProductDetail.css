@@ -1,0 +1,22 @@
+.productdetail-container {
+    display: flex;
+    justify-content: center;
+    min-height: 600px;
+}
+
+.product-detail {
+    border: 1px solid black;
+    width: 50%;
+    text-align: center;
+}
+
+.product-checkout {
+    width: 50%;
+    /* text-align: center; */
+    /* border: 1px solid black; */
+    transform: translateX(40px);
+}
+
+hr {
+    margin-right: 70px;
+}

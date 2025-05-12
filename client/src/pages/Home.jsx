@@ -1,4 +1,4 @@
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import '../styles/Home.css'
 
 function Home() {
@@ -96,16 +96,24 @@ function Home() {
         <><div className="intro-container">
             <h1>Welcome to Cart Blanche</h1>
             <h3>Elevate your shopping experience.</h3><br />
-            <a href="#products-container"><button className='shop-link'>Shop Now</button></a>
+            <a href="#products"><button className='shop-link'>Shop Now</button></a>
         </div>
-        <div id='products-container'>
+        <div id='products'>
             <h1>Products</h1>
+            {/* <div class="dropdown">
+                <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+                <div id="myDropdown" class="dropdown-content">
+                    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()"></input>
+                    <a href="#about">Shirt</a>
+                    <a href="#base">Pants</a>
+                </div>
+            </div> */}
             <div className="product-grid">
                 {products.map((product) => (
-                    <div key={product.id} className="product-card">
-                    <h3>{product.name}</h3>
-                    <p>{product.price}</p>
-                    </div>
+                    <Link to={`/products/${product.id}`} key={ product.id } state={ product } className="product-card">
+                        <h3>{product.name}</h3>
+                        <p>${product.price.toFixed(2)}</p>
+                    </Link>
                 ))}
             </div>
         </div></>
