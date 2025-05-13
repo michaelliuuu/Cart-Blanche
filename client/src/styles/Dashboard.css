@@ -1,0 +1,13 @@
+.dashboard-container {
+    display: flex;
+}
+
+.dashboard-options-container {
+    width: 20%;
+}
+
+.dashboard-display-container {
+    /* border: 1px solid black; */
+    width: 100%;
+    background-color: #fff5d0;
+}

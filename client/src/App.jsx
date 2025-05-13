@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import UserDashboard from './pages/UserDashboard';
 import Cart from './pages/Cart';
 
 // Allows products page to load only when needed
@@ -21,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/user/:userId" element={<UserDashboard />} />
         <Route path="/cart" element={<Cart />} />
         <Route 
           path="/products/:productId" 
