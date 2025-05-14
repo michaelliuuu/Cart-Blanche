@@ -100,14 +100,6 @@ function Home() {
         </div>
         <div id='products'>
             <h1>Products</h1>
-            {/* <div class="dropdown">
-                <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-                <div id="myDropdown" class="dropdown-content">
-                    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()"></input>
-                    <a href="#about">Shirt</a>
-                    <a href="#base">Pants</a>
-                </div>
-            </div> */}
             <div className="product-grid">
                 {products.map((product) => (
                     <Link to={`/products/${product.id}`} key={ product.id } state={ product } className="product-card">

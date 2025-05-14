@@ -24,8 +24,17 @@ function Login() {
             const data = await response.json();
 
             if (data.success) {
+                // Saves user info to localStorage
+                localStorage.setItem('user', JSON.stringify(data.user));
+
                 alert('Login successful');
-                navigate(`/user/${data.user.id}`);  
+                
+                // Checks to see if the user who is logging in is an admin
+                if (data.user.role === "admin") {
+                    navigate(`/admin`);  
+                } else {
+                    navigate(`/user/${data.user.id}`);  
+                }
             } else {
                 alert('Invalid credentials');
             }

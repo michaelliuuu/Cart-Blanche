@@ -24,6 +24,8 @@ if ($user && password_verify($data['password'], $user['password'])) {
         'success' => true,
         'user' => [
             'id' => (string)$user['_id'],
+            'role' => $user['role'],
+            'email' => $user['email']
         ], 
         'message' => 'Login successful'
     ];
