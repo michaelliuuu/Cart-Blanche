@@ -3,7 +3,7 @@ import '../styles/ProductDetail.css'
 
 function ProductDetail() {
   const { state } = useLocation();
-  const product = state;
+  const product = state?.product;
   
   return (
     <><div className='productdetail-container'>

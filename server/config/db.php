@@ -7,17 +7,21 @@
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/..");
     $dotenv->load();
 
-    // Checks if MongoDB info is correct
     try {
+        // Connect to MongoDB
         $dbPassword = $_ENV['DB_PASSWORD'];  
         $dbUser = $_ENV['DB_USERNAME'];    
         $dbCluster = $_ENV['CLUSTER_NAME'];
-    
         $client = new MongoDB\Client("mongodb+srv://$dbUser:$dbPassword@cluster0.3ysjqoh.mongodb.net/?retryWrites=true&w=majority&appName=$dbCluster");
+        
+        // Database
         $db = $client->cartBlanche;
+
+        // Collections
         $users = $db->users;
+        $products = $db->products;
     } catch (Exception $e) {
-        echo ".env error";
+        echo "Error connecting to MongoDB.\n";
         printf($e->getMessage());
     }
 

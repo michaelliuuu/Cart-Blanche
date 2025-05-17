@@ -11,6 +11,7 @@ function Login() {
         e.preventDefault();
 
         try {
+            console.log("test1");
             const response = await fetch('http://localhost:8000/server/api/login.php', {
                 method: 'POST',
                 headers: { 
@@ -18,7 +19,7 @@ function Login() {
                 },
                 body: JSON.stringify({ email, password }),
             });
-    
+
             if (!response.ok) throw new Error('Network response was not ok');
     
             const data = await response.json();

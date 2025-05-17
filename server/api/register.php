@@ -4,20 +4,23 @@ header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header('Content-Type: application/json');
 
+// Exit file if not POST
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') exit();
 
+// MongoDB connection
 require_once '../config/db.php';
 
+// Decodes from JSON to PHP array
 $data = json_decode(file_get_contents('php://input'), true);
 
-// Makes sure email or password is filled out
+// Checks if email and password is filled out
 if (!$data['email'] || !$data['password']) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Missing email or password']);
     exit;
 }
 
-// Checks if user's email exists
+// Duplicate user check
 $existingUser = $users->findOne(['email' => $data['email']]);
 if ($existingUser) {
     echo json_encode(['success' => false, 'message' => 'User already exists']);
@@ -27,7 +30,7 @@ if ($existingUser) {
 // Hash password
 $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
-// Checks that it is inserted correctly
+// Insert registered user into database
 try {
     $users->insertOne([
         'email' => $data['email'],

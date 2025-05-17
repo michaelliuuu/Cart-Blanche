@@ -21,7 +21,9 @@ function AdminDashboard() {
           <div id='manage-products'>
             <ProductTable />  
           </div>
-          <div id='manage-orders'></div>
+          <div id='manage-orders'>
+            {/* Table that displays all users orders, filter to search for users */}
+          </div>
         </div>
       </div>
     );
