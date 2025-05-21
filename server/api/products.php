@@ -15,13 +15,22 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 // Switch case for CRUD of products on admin dashboard
 switch ($_SERVER['REQUEST_METHOD']) {
+    // Get Products
     case 'GET':
-        // Get all products
         $products = $db->products->find()->toArray();
-        echo json_encode($products);
+        // Transform MongoDB _id to id for frontend
+        $transformedProducts = array_map(function($product) {
+            return [
+                'id' => (string)$product['_id'],
+                'name' => $product['name'],
+                'price' => $product['price'],
+                'category' => $product['category']
+            ];
+        }, $products);
+        echo json_encode($transformedProducts);
         break;
 
-    // Add product
+    // Add Products
     case 'POST':
         // Checks if all fields are filled out
         if (!$data['name'] || !$data['price'] || !$data['category']) {
@@ -44,88 +53,47 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
     
-    // // Editing product    
-    // case 'PUT':
-    //     // Check if all required fields are present
-    //     if (!$data['id'] || !$data['name'] || !$data['price'] || !$data['category']) {
-    //         http_response_code(400);
-    //         echo json_encode(['success' => false, 'message' => 'Missing fields']);
-    //         exit;
-    //     }
+    // Edit Product    
+    case 'PUT':
+        // Check if all required fields are present
+        if (!$data['name'] || !$data['price'] || !$data['category']) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Missing fields']);
+            exit;
+        }
     
-    //     try {
-    //         $result = $db->products->updateOne(
-    //             ['_id' => $data['id']],
-    //             ['$set' => [
-    //                 'name' => $data['name'],
-    //                 'price' => (float)$data['price'],
-    //                 'category' => $data['category']
-    //             ]]
-    //         );
+        try {
+            // Updates the product
+            $result = $db->products->updateOne(
+                // FIX THIS!!!!!!!! Need to change this to filter id instead, if changing name it won't work
+                ['name' => $data['name']], 
+                ['$set' => [
+                    'name' => $data['name'],
+                    'price' => (float)$data['price'],
+                    'category' => $data['category']
+                ]]
+            );
             
-    //         if ($result->getModifiedCount() > 0) {
-    //             echo json_encode(['success' => true, 'message' => 'Product updated']);
-    //         } else {
-    //             echo json_encode(['success' => false, 'message' => 'No changes made']);
-    //         }
-    //     } catch (Exception $e) {
-    //         http_response_code(500);
-    //         echo json_encode(['success' => false, 'message' => 'Update failed']);
-    //     }
-    //     break;
+            echo json_encode(['success' => true, 'message' => 'Product updated']);
+        } catch (Exception $e) {
+            // Error response if failed
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Update failed']);
+        }
+        break;
 
-    // case 'DELETE':
-    //     // Delete product
-    //     $data = getJsonInput();
-    //     if (!$data['id']) {
-    //         http_response_code(400);
-    //         echo json_encode(['success' => false, 'message' => 'Missing ID']);
-    //         exit;
-    //     }
-    //     $deleteResult = $db->products->deleteOne(['_id' => new MongoDB\BSON\ObjectId($data['id'])]);
-    //     echo json_encode(['success' => true, 'deletedCount' => $deleteResult->getDeletedCount()]);
-    //     break;
-
-    // case 'DELETE':
-    //     // Get the ID from query parameters
-    //     $id = $_GET['id'] ?? null;
-        
-    //     if (!$id) {
-    //         http_response_code(400);
-    //         echo json_encode(['success' => false, 'message' => 'Missing product ID']);
-    //         exit;
-    //     }
-    
-    //     try {
-    //         $filter = ['_id' => $id];
-            
-    //         $result = $db->products->deleteOne($filter);
-            
-    //         if ($result->getDeletedCount() > 0) {
-    //             echo json_encode(['success' => true, 'message' => 'Product deleted']);
-    //         } else {
-    //             echo json_encode(['success' => false, 'message' => 'Product not found']);
-    //         }
-    //     } catch (Exception $e) {
-    //         http_response_code(500);
-    //         echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
-    //     }
-    //     break;
-
-    // case 'PUT':
-    //     // Update product (optional)
-    //     $data = getJsonInput();
-    //     if (!$data['id'] || !$data['updates']) {
-    //         http_response_code(400);
-    //         echo json_encode(['success' => false, 'message' => 'Missing ID or update data']);
-    //         exit;
-    //     }
-    //     $updateResult = $db->products->updateOne(
-    //         ['_id' => new MongoDB\BSON\ObjectId($data['id'])],
-    //         ['$set' => $data['updates']]
-    //     );
-    //     echo json_encode(['success' => true, 'modifiedCount' => $updateResult->getModifiedCount()]);
-    //     break;
+    // Delete Product
+    case 'DELETE':
+        // $id = $_GET['id'] ?? null;
+        try {
+            // FIXX!!!! Deletes first item in database
+            $deleteResult = $db->products->deleteOne([['id' => $data['id']]]); 
+            echo json_encode(['success' => true, 'message' => 'Product deleted']);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Deletion failed', 'error' => $e->getMessage()]);
+        }
+        break;
 
     default:
         http_response_code(405);

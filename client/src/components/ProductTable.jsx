@@ -15,12 +15,17 @@ export const ProductTable = () => {
   // Initialize useQueryClient to reload table when adding product
   const queryClient = useQueryClient();
 
-  // Fetch data from PHP API
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
       const response = await fetch(PRODUCT_URL);
-      return response.json();
+      const data = await response.json();
+      return data.map(product => ({
+        id: product.id || product._id, // Use either id or _id
+        name: product.name,
+        price: product.price,
+        category: product.category
+      }));
     },
   });
 
@@ -36,7 +41,13 @@ export const ProductTable = () => {
           category: newProduct.category
         }),
       });
-      return response.json();
+      const result = await response.json();
+      return {
+        id: result.id,  // The MongoDB-generated _id
+        name: newProduct.name,
+        price: newProduct.price,
+        category: newProduct.category
+      };
     },
     // Refresh table when successfully added product
     onSuccess: () => {
@@ -44,66 +55,60 @@ export const ProductTable = () => {
     },
     // Error when unable to add product
     onError: (error) => {
-      console.error('Error creating product:', error);
       alert('Failed to create product: ' + error.message);
     }
   });
 
-  // // Edit product
-  // const { mutateAsync: updateProduct, isPending: isUpdating } = useMutation({
-  //   mutationFn: async (updatedProduct) => {
-  //     const response = await fetch(PRODUCT_URL, {
-  //       method: 'PUT',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({
-  //         id: updatedProduct.id,
-  //         name: updatedProduct.name,
-  //         price: parseFloat(updatedProduct.price),
-  //         category: updatedProduct.category
-  //       }),
-  //     });
-  //     if (!response.ok) {
-  //       const errorData = await response.json(); // Get detailed error
-  //       throw new Error(errorData.message || 'Failed to update product');
-  //     }
-  //     return response.json();
-  //   },
-  //   // Refresh table when successfully edited product
-  //   onSuccess: () => queryClient.invalidateQueries(['products']),
-  //   // Error when unable to edit product
-  //   onError: (error) => {
-  //     console.error('Error creating product:', error);
-  //     alert('Failed to create product: ' + error.message);
-  //   }
-  // });
+  // Update product in database
+  const { mutateAsync: updateProduct } = useMutation({
+    mutationFn: async (updatedProduct) => {
+      const response = await fetch(PRODUCT_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          // id: updatedProduct.id,
+          name: updatedProduct.name,
+          price: parseFloat(updatedProduct.price),
+          category: updatedProduct.category
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update product');
+      }
+      return response.json();
+    },
+    // Refresh table when successfully updated product
+    onSuccess: () => queryClient.invalidateQueries(['products']),
+    // Error when unable to update product
+    onError: (error) => {
+      alert('Failed to update product: ' + error.message);
+    }
+  });
 
-  // const { mutate: deleteProduct } = useMutation({
-  //   mutationFn: async (id) => {
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //   },
-  // });
+  // Delete product mutation
+  const { mutateAsync: deleteProduct } = useMutation({
+    mutationFn: async (productId) => {
+      const response = await fetch(`${PRODUCT_URL}?id=${productId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete product');
+      }
+      return response.json();
+    },
+    // Refresh table when successfully deleted product
+    onSuccess: () => {
+      queryClient.invalidateQueries(['products']);
+    },
+    // Error when unable to delete product
+    onError: (error) => {
+      alert(`Delete failed: ${error.message}`);
+    }
+  });
 
-  // // Delete product mutation
-  // const { mutateAsync: deleteProduct } = useMutation({
-  //   mutationFn: async (productId) => {
-  //     const response = await fetch(`${PRODUCT_URL}?id=${productId}`, {
-  //       method: 'DELETE',
-  //     });
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       throw new Error(errorData.message || 'Failed to delete product');
-  //     }
-  //     return response.json();
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(['products']);
-  //   },
-  //   onError: (error) => {
-  //     console.error('Delete error:', error);
-  //     alert(`Delete failed: ${error.message}`);
-  //   }
-  // });
-
+  // Columns
   const columns = useMemo(() => [
     { accessorKey: 'id', header: 'ID', enableEditing: false, size: 80 },
     { accessorKey: 'name', header: 'Name', size: 150 },
@@ -127,7 +132,7 @@ export const ProductTable = () => {
         await updateProduct(values);
         table.setEditingRow(null);
       } catch (error) {
-        console.error('Update error:', error);
+        // console.error('Update error:', error);
       }
     },
     renderRowActions: ({ row }) => (
