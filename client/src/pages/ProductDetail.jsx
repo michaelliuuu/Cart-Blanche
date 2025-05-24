@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+
 import '../styles/ProductDetail.css'
 
 function ProductDetail() {

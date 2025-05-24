@@ -28,8 +28,9 @@ if ($user && password_verify($data['password'], $user['password'])) {
         'user' => [
             'id' => (string)$user['_id'],
             'role' => $user['role'],
-            'email' => $user['email']
+            'email' => $user['email'],
         ], 
+        'token' => bin2hex(random_bytes(16)),
         'message' => 'Login successful'
     ];
     echo json_encode($response);

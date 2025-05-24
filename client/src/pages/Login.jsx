@@ -1,47 +1,33 @@
-import '../styles/Login.css'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../components/AuthProvider';
+
+import '../styles/Login.css'
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+    const auth = useAuth();
+    const [input, setInput] = useState({ email: "", password: "" });
 
+    // Handles Login
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            console.log("test1");
-            const response = await fetch('http://localhost:8000/server/api/login.php', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!response.ok) throw new Error('Network response was not ok');
-    
-            const data = await response.json();
-
-            if (data.success) {
-                // Saves user info to localStorage
-                localStorage.setItem('user', JSON.stringify(data.user));
-
-                alert('Login successful');
-                
-                // Checks to see if the user who is logging in is an admin
-                if (data.user.role === "admin") {
-                    navigate(`/admin`);  
-                } else {
-                    navigate(`/user/${data.user.id}`);  
-                }
-            } else {
-                alert('Invalid credentials');
+            if (input.email !== "" && input.password !== "") {
+                auth.loginAction(input);
             }
-        } catch(error) {
-            alert('Error: ' + error.message);
+        } catch (e) {
+            alert("Please provide a valid input.");
+            console.log("Error: " + e);
         }
+    };
+
+    const handleInput = (e) => {
+        const { name, value } = e.target;
+        setInput((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
     };
 
     return (
@@ -52,8 +38,8 @@ function Login() {
                     <p>Sign in to manage email preferences, track orders and returns, and check out faster.</p>
                 </div>
                 <form className='login-text' onSubmit={handleSubmit}>
-                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Email Address' required />
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' required />
+                    <input type="text" name='email' id='email' value={input.email} onChange={handleInput} placeholder='Email Address' required />
+                    <input type="password" name='password' id='password' value={input.password} onChange={handleInput} placeholder='Password' required />
                     <p><Link to={'/forgotpassword'}><b>Forgot password?</b></Link></p>
                     <button className='submit-button' type='submit'>Continue</button>
                 </form>
@@ -64,6 +50,5 @@ function Login() {
         </div>
     );
 }
-
 
 export default Login;

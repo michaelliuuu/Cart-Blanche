@@ -1,13 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-import '../styles/Dashboard.css';
 import { ProductTable } from '../components/ProductTable';
+import { useAuth } from '../components/AuthProvider'
+
+import '../styles/Dashboard.css';
 
 function AdminDashboard() {
-    // Logs out user
-    const navigate = useNavigate();
-    const handleLogout = () => {
-      navigate('/login');
-    }
+  const auth = useAuth();
 
     return (
       <div className='dashboard-container'>
@@ -15,7 +12,7 @@ function AdminDashboard() {
           <h2>Admin Dashboard</h2>
           <a href="#manage-products">Manage products</a>
           <a href="#manage-orders">Manage orders</a>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={auth.logOut}>Logout</button>
         </div>
         <div className='dashboard-display-container'>
           <div id='manage-products'>

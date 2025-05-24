@@ -7,6 +7,7 @@ function Register() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    // Change this 
     const handleSubmit = async (e) => {
         e.preventDefault();
         

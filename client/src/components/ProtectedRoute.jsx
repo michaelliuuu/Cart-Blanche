@@ -1,24 +1,33 @@
 import { Navigate } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-    const userJSON = localStorage.getItem('user');
-    // console.log('Stored user in localStorage:', userJSON);
+    const auth = useAuth();
 
-    const user = userJSON ? JSON.parse(userJSON) : null;
-    // console.log('Parsed user object:', user);
-
-    if (!user) {
-        // console.log('No user found, redirecting to login');
+    // First check if auth context exists and has user data
+    if (!auth || !auth.user) {
+        console.log("User not logged in - redirecting to login");
         return <Navigate to="/login" replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
-        // console.log(`User role (${user.role}) not allowed, redirecting to unauthorized`);
-        return <Navigate to="/unauthorized" replace />;
+    // Then check the token
+    if (!auth.token) {
+        console.log("No token found - redirecting to login");
+        return <Navigate to="/login" replace />;
     }
 
     console.log('Access granted to route');
     return children;
 };
+
+// const ProtectedRoute = ({ allowedRoles, children }) => {
+//     const auth = useAuth();
+    
+//     if (!auth?.token) return <Navigate to="/login" replace />;
+//     if (allowedRoles && !allowedRoles.includes(auth.user?.role)) {
+//       return <Navigate to="/unauthorized" replace />;
+//     }
+//     return children ? children : <Outlet />;
+//   };
 
 export default ProtectedRoute;

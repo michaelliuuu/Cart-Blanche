@@ -1,6 +1,8 @@
 import '../styles/ForgotPassword.css'
 
 function ForgotPassword() {
+    // WIP
+
     return (
         <div className='password-parent'>
             <div className='password-container'>
